@@ -1,8 +1,8 @@
-
+import {SignIn as LoginPage} from '@clerk/clerk-react';
 
 const Login = () => {
   return (
-    <div>Login</div>
+    <LoginPage path='/login'/>
   )
 }
 

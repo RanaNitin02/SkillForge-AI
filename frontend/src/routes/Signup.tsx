@@ -1,8 +1,8 @@
-
+import {SignUp as SignupPage} from '@clerk/clerk-react';
 
 const Signup = () => {
   return (
-    <div>Signup</div>
+    <SignupPage path='/signup'/>
   )
 }
 
