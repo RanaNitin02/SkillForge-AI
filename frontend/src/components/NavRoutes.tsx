@@ -19,7 +19,7 @@ const NavRoutes = ({ isMobile = false }: NavRoutesProps) => {
                     <NavLink
                         key={route.href}
                         to={route.href}
-                        className={({ isActive }) => cn("text-base text-neutral-600", isActive && "text-neutral-900 font-semibold")}
+                        className={({ isActive } : any) => cn("text-base text-neutral-600", isActive && "text-neutral-900 font-semibold")}
                     >
                         {route.label}
                     </NavLink>

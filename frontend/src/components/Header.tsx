@@ -1,9 +1,11 @@
 import { useAuth } from "@clerk/clerk-react"
 import Container from "./Container"
 import LogoContainer from "./LogoContainer";
-import NavRoutes from "./NavRoutes";
+import { MainRoutes } from "@/lib/helper"
 import { cn } from "@/lib/utils";
 import { NavLink } from "react-router-dom";
+import ProfileContainer from "./ProfileContainer";
+import ToggleContainer from "./ToggleContainer";
 
 
 const Header = () => {
@@ -11,27 +13,57 @@ const Header = () => {
   const { userId } = useAuth();
 
   return (
-    <header className={cn("w-full border-b duration-150 translate-all ease-in-out")}>
+    <header
+      className={cn("w-full border-b duration-150 transition-all ease-in-out")}
+    >
       <Container>
-        <div className="flex items-center gap-4 w-full">
-          {/* logo */}
+        <div className="flex items-center gap-4">
+
+          {/* logo section */}
           <LogoContainer />
 
-          {/* nav section */}
-          <nav className="hidden md:flex flex-1 justify-center gap-3">
-            <NavRoutes />
-            {userId && (
-              <NavLink
-                to={'/generate'}
-                className={({ isActive }) => cn("text-base text-neutral-600", isActive && "text-neutral-900 font-semibold")}
-              >
-                Take an interview
-              </NavLink>
-            )}
+          {/* navigation section */}
+          <nav className="hidden md:flex items-center gap-3">
+            <ul className="flex items-center gap-6">
+              {MainRoutes.map((route) => (
+                <NavLink
+                  className={({ isActive }: any) =>
+                    cn(
+                      "text-base text-neutral-600",
+                      isActive && "text-neutral-900 font-semibold"
+                    )
+                  }
+                  key={route.href}
+                  to={route.href}
+                >
+                  {route.label}
+                </NavLink>
+              ))}
+
+              {userId && (
+                <NavLink
+                  className={({ isActive }: any) =>
+                    cn(
+                      "text-base text-neutral-600",
+                      isActive && "text-neutral-900 font-semibold"
+                    )
+                  }
+                  to={"/generate"}
+                >
+                  Take an Interview
+                </NavLink>
+              )}
+            </ul>
           </nav>
 
-          {/* profile section */}
+          <div className="ml-auto flex items-center gap-6">
+            {/* profile section */}
+            <ProfileContainer />
+            {/* toggle action */}
+            <ToggleContainer />
+          </div>
         </div>
+        
       </Container>
     </header>
   )
