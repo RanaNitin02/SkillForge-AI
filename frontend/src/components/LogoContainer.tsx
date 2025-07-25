@@ -1,10 +1,14 @@
 import { Link } from "react-router-dom"
-import Logo from '../assets/svg/logo.svg'
+import Logo from '../assets/img/logo/logo.png'
 
 const LogoContainer = () => {
   return (
     <Link to="/">
-      <img src={Logo} className="min-w-10 min-h-10 object-contain " />
+      <img
+        src={Logo}
+        className="h-10 w-34 object-contain"
+        alt="logo"
+      />
     </Link>
   )
 }

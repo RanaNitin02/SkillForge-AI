@@ -13,14 +13,13 @@ const Header = () => {
   const { userId } = useAuth();
 
   return (
-    <header
-      className={cn("w-full border-b duration-150 transition-all ease-in-out")}
-    >
+    <header className={cn("w-full border-b duration-150 transition-all ease-in-out")}>
       <Container>
-        <div className="flex items-center gap-4">
-
+        <div className="flex items-center justify-between w-full">
           {/* logo section */}
-          <LogoContainer />
+          <div className="flex items-center">
+            <LogoContainer />
+          </div>
 
           {/* navigation section */}
           <nav className="hidden md:flex items-center gap-3">
@@ -48,7 +47,7 @@ const Header = () => {
                       isActive && "text-neutral-900 font-semibold"
                     )
                   }
-                  to={"/generate"}
+                  to="/generate"
                 >
                   Take an Interview
                 </NavLink>
@@ -56,15 +55,14 @@ const Header = () => {
             </ul>
           </nav>
 
-          <div className="ml-auto flex items-center gap-6">
-            {/* profile section */}
+          {/* right side */}
+          <div className="flex items-center gap-6">
             <ProfileContainer />
-            {/* toggle action */}
             <ToggleContainer />
           </div>
         </div>
-        
       </Container>
+
     </header>
   )
 }
