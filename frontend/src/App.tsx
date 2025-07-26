@@ -11,6 +11,8 @@ import ProtectedRoutes from '@/layout/ProtectedRoutes';
 import MainLayout from '@/layout/MainLayout';
 import Generate from '@/components/Generate';
 import Dashboard from '@/routes/Dashboard';
+import EditPage from '@/routes/EditPage';
+
 
 const App = () => {
   return (
@@ -35,8 +37,9 @@ const App = () => {
             <MainLayout />
           </ProtectedRoutes>
         }>
-          <Route element={<Generate />} path='/generate'>
-            <Route index element={<Dashboard />}/>
+          <Route element={<Generate />} path='/generate' >
+            <Route index element={<Dashboard />} />
+            <Route path=':interviewId' element={<EditPage />} />
           </Route>
         </Route>
 
