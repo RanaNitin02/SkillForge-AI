@@ -1,20 +1,23 @@
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator
-} from "@/components/ui/breadcrumb"
-import { Home } from "lucide-react";
 import React from "react";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Home } from "lucide-react";
 
 interface CustomBreadCrumbProps {
-    breadCrumbPage: string;
-    breadCrumpItems?: { link: string; label: string }[];
+  breadCrumbPage: string;
+  breadCrumpItems?: { link: string; label: string }[];
 }
 
-export const CustomBreadCrumb = ({ breadCrumbPage, breadCrumpItems}: CustomBreadCrumbProps) => {
+export const CustomBreadCrumb = ({
+  breadCrumbPage,
+  breadCrumpItems,
+}: CustomBreadCrumbProps) => {
   return (
     <Breadcrumb>
       <BreadcrumbList>
@@ -48,5 +51,5 @@ export const CustomBreadCrumb = ({ breadCrumbPage, breadCrumpItems}: CustomBread
         </BreadcrumbItem>
       </BreadcrumbList>
     </Breadcrumb>
-  )
-}
+  );
+};
