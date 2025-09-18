@@ -14,6 +14,10 @@ import Dashboard from '@/routes/Dashboard';
 import EditPage from '@/routes/EditPage';
 import MockLoadPage from './routes/MockLoadPage';
 import MockInterviewPage from './routes/MockInterviewPage';
+import AboutPage from './routes/AboutPage';
+import ServicePage from './routes/ServicePage';
+import ContactPage from './routes/ContactPage';
+import Feedback  from './routes/Feedback';
 
 
 const App = () => {
@@ -21,19 +25,22 @@ const App = () => {
     <Router>
       <Routes>
 
-        { /* public routes */ }
+        { /* public routes */}
         <Route element={<PublicLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="services" element={<ServicePage />} />
+          <Route path="contact" element={<ContactPage />} />
         </Route>
- 
-        { /* authentication layout */ }
+
+        { /* authentication layout */}
         <Route element={<AuthLayout />}>
           <Route path='/login/*' element={<Login />} />
           <Route path='/signup/*' element={<Signup />} />
         </Route>
 
 
-        { /* protected routes */ }
+        { /* protected routes */}
         <Route element={
           <ProtectedRoutes>
             <MainLayout />
@@ -44,9 +51,10 @@ const App = () => {
             <Route path=':interviewId' element={<EditPage />} />
             <Route path='interview/:interviewId' element={<MockLoadPage />} />
             <Route path='interview/:interviewId/start' element={<MockInterviewPage />} />
+
+            <Route path='feedback/:interviewId' element={<Feedback />} />
           </Route>
         </Route>
-
       </Routes>
     </Router>
   )
