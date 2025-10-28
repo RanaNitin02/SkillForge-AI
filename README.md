@@ -20,12 +20,10 @@ SkillForge AI is an intelligent mock interview platform designed to help student
 
 | Tech       | Description                     |
 |------------|---------------------------------|
-| MongoDB    | Database for storing user data & messages |
-| Express.js | Backend framework for REST API  |
-| React.js   | Frontend UI                     |
-| Node.js    | JavaScript runtime environment  |
-| JWT        | Secure user authentication      |
-| OpenAI API | (Optional) For GPT-powered responses |
+| React.js   | Interactive frontend user interface |
+| Clerk    | Secure user authentication & authorization  |
+| Firebase        | Firestore database for storing interview history and analytics      |
+| Google Gemini | AI model for generating dynamic interview questions and feedback |
 
 ---
 
