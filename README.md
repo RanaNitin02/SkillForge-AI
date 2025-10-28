@@ -60,7 +60,7 @@ SkillForge AI can be utilized across multiple domains to enhance interview prepa
 ## ⚙️ Installation & Setup
 
 1. **Clone the repository**
-2. **Install backend and frontend dependencies**
+2. **Install all dependencies**
 3. **Configure environment variables**
 4. **Run server**
 5. **Visit `http://localhost:5173` in your browser**
