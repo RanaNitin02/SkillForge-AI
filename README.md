@@ -1,4 +1,5 @@
-# 🤖 VirtuMate: AI Assistant – MERN Stack
+# 🚀 SkillForge AI
+Your AI Powered Mock Interview Partner for Technical Excellence
 ---
 
 ## 🛠 Tech Stack
