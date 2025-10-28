@@ -49,7 +49,6 @@ const RecordAnswer = ({
   isWebCam,
   setIsWebCam,
 }: RecordAnswerProps) => {
-
   const {
     interimResult,
     isRecording,
@@ -95,11 +94,13 @@ const RecordAnswer = ({
   };
 
   const cleanJsonResponse = (responseText: string) => {
-    
+    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
 
+    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
     cleanText = cleanText.replace(/(json|```|`)/g, "");
 
+    // Step 3: Parse the clean JSON text into an array of objects
     try {
       return JSON.parse(cleanText);
     } catch (error) {
@@ -156,6 +157,8 @@ const RecordAnswer = ({
     const currentQuestion = question.question;
 
     try {
+      // query the firbase to check if the user answer already exists for this question
+
       const userAnswerQuery = query(
         collection(db, "userAnswers"),
         where("userId", "==", userId),
@@ -164,6 +167,7 @@ const RecordAnswer = ({
 
       const querySnap = await getDocs(userAnswerQuery);
 
+      // if the user already answerd the question dont save it again
       if (!querySnap.empty) {
         console.log("Query Snap Size", querySnap.size);
         toast.info("Already Answered", {
@@ -171,6 +175,7 @@ const RecordAnswer = ({
         });
         return;
       } else {
+        // save the answer
 
         const questionAnswerRef = await addDoc(collection(db, "userAnswers"), {
           mockIdRef: interviewId,
@@ -207,6 +212,7 @@ const RecordAnswer = ({
   };
 
   useEffect(() => {
+    // combine all transcripts into a single answers
     const combinedTranscripts = results
       .filter((result): result is ResultType => typeof result !== "string")
       .map((result) => result.transcript)

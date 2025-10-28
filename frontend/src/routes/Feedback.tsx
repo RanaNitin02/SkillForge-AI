@@ -85,6 +85,8 @@ const Feedback = () => {
     }
   }, [interviewId, navigate, userId]);
 
+  //   calculate the ratings out of 10
+
   const overAllRating = useMemo(() => {
     if (feedbacks.length === 0) return "0.0";
 
@@ -131,7 +133,7 @@ const Feedback = () => {
 
       <Headings title="Interview Feedback" isSubHeading />
 
-      {feedbacks.length === 0 && 
+      {feedbacks && (
         <Accordion type="single" collapsible className="space-y-6">
           {feedbacks.map((feed) => (
             <AccordionItem
@@ -193,8 +195,7 @@ const Feedback = () => {
             </AccordionItem>
           ))}
         </Accordion>
-      }
-
+      )}
     </div>
   )
 }
