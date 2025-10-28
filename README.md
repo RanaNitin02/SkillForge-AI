@@ -27,30 +27,30 @@ SkillForge AI is an intelligent mock interview platform designed to help student
 
 ---
 
-### 🌍 Real-World Applications
+# 🌍 Real-World Applications
 SkillForge AI can be utilized across multiple domains to enhance interview preparation, skill development, and confidence building:
 
-# 🧑‍💼 Placement & Career Services
+### 🧑‍💼 Placement & Career Services
 - Help students prepare for technical campus interviews
 - Provide structured mock sessions for coding, system design, and CS fundamentals
 - Offer resume-aligned interview paths for different companies and roles
 
-# 🎓 Education & Training Institutes
+### 🎓 Education & Training Institutes
 - Act as a virtual interview mentor for classrooms and training programs
 - Assist instructors in evaluating student readiness
 - Provide analytics to identify skill gaps in each learner
 
-# 💼 Professional Upskilling
+### 💼 Professional Upskilling
 - Support working professionals switching jobs or roles
 - Deliver focused practice for specific domains like Backend, Frontend, DevOps, etc.
 - Improve communication and problem-solving clarity
 
-# 🧠 Self-Learning & Personal Growth
+### 🧠 Self-Learning & Personal Growth
 - Build confidence through repeated mock interviews
 - Track performance trends and feedback history
 - Enable personalized learning paths with challenge variability
 
-# 🏢 Corporate Hiring & HR Tech
+### 🏢 Corporate Hiring & HR Tech
 - Screen candidates with AI interview flows before human rounds
 - Create standardized evaluation criteria to reduce bias
 - Automate initial skill assessments for faster hiring
