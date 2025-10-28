@@ -1,5 +1,6 @@
-# 🚀 SkillForge AI
-Your AI Powered Mock Interview Partner for Technical Excellence
+# 🚀 SkillForge AI: Your AI Powered Mock Interview Partner for Technical Excellence
+
+SkillForge AI is an intelligent mock interview platform designed to help students and professionals master technical interviews through real-time AI evaluation. The platform dynamically tailors interview questions using Google Gemini AI and provides instant, actionable feedback to boost confidence and skills.
 ---
 
 ## 🛠 Tech Stack
