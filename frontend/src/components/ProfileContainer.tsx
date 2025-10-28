@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 
 const ProfileContainer = () => {
   
-    const { isLoaded, isSignedIn } = useAuth();
+    const { isSignedIn } = useAuth();
 
     if ( !isSignedIn) {
         return (

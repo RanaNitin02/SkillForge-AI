@@ -15,8 +15,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 const MockLoadPage = () => {
 
   const { interviewId } = useParams<{ interviewId: string }>();
-  const [isLoading, setIsLoading] = useState
-    (false);
+  const [isLoading] = useState(false);
   const [isWebCamEnabled, setIsWebCamEnabled] = useState(false);
   const [interview, setInterview] = useState<Interview | null>(null);
 

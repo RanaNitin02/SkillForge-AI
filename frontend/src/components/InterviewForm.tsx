@@ -23,16 +23,11 @@ interface InterviewFormProps {
 }
 
 const formSchema = z.object({
-  position: z
-    .string()
-    .min(1, "Position is required")
-    .max(100, "Position must be 100 characters or less"),
-  description: z.string().min(10, "Description is required"),
-  experience: z.coerce
-    .number()
-    .min(0, "Experience cannot be empty or negative"),
-  techStack: z.string().min(1, "Tech stack must be at least a character"),
-})
+  position: z.string().min(1, "Position is required"),
+  description: z.string().min(1, "Description is required"),
+  experience: z.number().min(0, "Experience must be positive"),
+  techStack: z.string().min(1, "Tech stack is required"),
+});
 
 type FormData = z.infer<typeof formSchema>
 
@@ -40,7 +35,12 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialData || {}
+  defaultValues: {
+    position: "",
+    description: "",
+    experience: 0,
+    techStack: "",
+  },
   });
 
 

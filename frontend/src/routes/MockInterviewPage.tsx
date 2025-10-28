@@ -13,7 +13,7 @@ import QuestionSection from "@/components/QuestionSection";
 const MockInterviewPage = () => {
 
     const { interviewId } = useParams<{ interviewId: string }>();
-    const [isLoading, setIsLoading] = useState(false);
+    const [isLoading] = useState(false);
     const [interview, setInterview] = useState<Interview | null>(null);
 
     const navigate = useNavigate();
