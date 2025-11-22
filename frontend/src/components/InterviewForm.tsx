@@ -1,22 +1,22 @@
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { FormProvider, useForm } from "react-hook-form"
-import type { Interview } from "@/types"
-import { CustomBreadCrumb } from "./CustomBreadCrumb"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useAuth } from "@clerk/clerk-react"
-import { toast } from "sonner"
-import Headings from "./Headings"
-import { Button } from "./ui/button"
-import { Loader, Trash2 } from "lucide-react"
-import { Separator } from "./ui/separator"
-import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form"
-import { Input } from "./ui/input"
-import { Textarea } from "./ui/textarea"
-import { chatSession } from "@/scripts/script"
-import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore"
-import { db } from "@/config/firebase.config"
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FormProvider, useForm, type Resolver } from "react-hook-form";
+import type { Interview } from "@/types";
+import { CustomBreadCrumb } from "./CustomBreadCrumb";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@clerk/clerk-react";
+import { toast } from "sonner";
+import Headings from "./Headings";
+import { Button } from "./ui/button";
+import { Loader, Trash2 } from "lucide-react";
+import { Separator } from "./ui/separator";
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
+import { Input } from "./ui/input";
+import { Textarea } from "./ui/textarea";
+import { chatSession } from "@/scripts/script";
+import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { db } from "@/config/firebase.config";
 
 interface FormMockInterviewProps {
   initialData?: Interview | null;
@@ -28,17 +28,18 @@ const formSchema = z.object({
     .min(1, "Position is required")
     .max(100, "Position must be 100 characters or less"),
   description: z.string().min(10, "Description must be at least 10 characters"),
-  experience: z.coerce
-    .number()
-    .min(0, "Experience cannot be negative"),
+  experience: z.coerce.number().min(0, "Experience cannot be negative"),
   techStack: z.string().min(1, "Tech stack is required"),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 const InterviewForm = ({ initialData }: FormMockInterviewProps) => {
+  // Make the resolver explicitly typed so react-hook-form and the resolver agree on FormData
+  const resolver = zodResolver(formSchema) as unknown as Resolver<FormData>;
+
   const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
+    resolver,
     mode: "onChange",
     defaultValues: {
       position: initialData?.position || "",
@@ -52,9 +53,7 @@ const InterviewForm = ({ initialData }: FormMockInterviewProps) => {
   const navigate = useNavigate();
   const { userId } = useAuth();
 
-  const title = initialData
-    ? initialData.position
-    : "Create a new mock interview";
+  const title = initialData ? initialData.position : "Create a new mock interview";
 
   const breadCrumpPage = initialData ? initialData.position : "Create";
   const actions = initialData ? "Save Changes" : "Create";
@@ -65,7 +64,7 @@ const InterviewForm = ({ initialData }: FormMockInterviewProps) => {
   const cleanJsonResponse = (responseText: string) => {
     let cleanText = responseText.trim();
     cleanText = cleanText.replace(/(json|```|`)/g, "");
-    
+
     const jsonArrayMatch = cleanText.match(/\[.*\]/s);
     if (jsonArrayMatch) {
       cleanText = jsonArrayMatch[0];
@@ -134,15 +133,14 @@ The questions should assess skills in ${data.techStack} development and best pra
 
       toast(toastMessage.title, { description: toastMessage.description });
       navigate("/generate", { replace: true });
-
     } catch (error) {
       console.error("Form submission error:", error);
-      
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "Something went wrong. Please try again later";
-      
-      toast.error("Error", { description: errorMessage });
+
+      const errorMessage =
+        error instanceof Error ? error.message : "Something went wrong. Please try again later";
+
+      // sonner toast usage: showing error
+      toast.error?.("Error", { description: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -166,7 +164,8 @@ The questions should assess skills in ${data.techStack} development and best pra
         techStack: initialData.techStack,
       });
     }
-  }, [initialData, form]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialData]);
 
   return (
     <div className="w-full flex-col space-y-4">
@@ -299,16 +298,8 @@ The questions should assess skills in ${data.techStack} development and best pra
             >
               Reset
             </Button>
-            <Button
-              type="submit"
-              size="sm"
-              disabled={isLoading || !form.formState.isValid}
-            >
-              {isLoading ? (
-                <Loader className="text-gray-50 animate-spin h-4 w-4" />
-              ) : (
-                actions
-              )}
+            <Button type="submit" size="sm" disabled={isLoading || !form.formState.isValid}>
+              {isLoading ? <Loader className="text-gray-50 animate-spin h-4 w-4" /> : actions}
             </Button>
           </div>
         </form>
