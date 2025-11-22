@@ -5,10 +5,15 @@ import {
 } from "@google/generative-ai";
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY!;
+if (!apiKey) {
+  throw new Error("❌ VITE_GEMINI_API_KEY is missing from .env file");
+}
+
 const genAI = new GoogleGenerativeAI(apiKey);
 
+// ✅ Use "gemini-pro" - this is the most stable and widely available model
 const model = genAI.getGenerativeModel({
-  model: "gemini-2.0-flash-exp"
+  model: "gemini-2.0-flash"
 });
 
 const generationConfig = {

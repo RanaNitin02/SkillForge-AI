@@ -18,33 +18,36 @@ import { chatSession } from "@/scripts/script"
 import { addDoc, collection, doc, serverTimestamp, updateDoc } from "firebase/firestore"
 import { db } from "@/config/firebase.config"
 
-interface InterviewFormProps {
+interface FormMockInterviewProps {
   initialData?: Interview | null;
 }
 
 const formSchema = z.object({
-  position: z.string().min(1, "Position is required"),
-  description: z.string().min(1, "Description is required"),
-  experience: z.number().min(0, "Experience must be positive"),
+  position: z
+    .string()
+    .min(1, "Position is required")
+    .max(100, "Position must be 100 characters or less"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  experience: z.coerce
+    .number()
+    .min(0, "Experience cannot be negative"),
   techStack: z.string().min(1, "Tech stack is required"),
 });
 
-type FormData = z.infer<typeof formSchema>
+type FormData = z.infer<typeof formSchema>;
 
-const InterviewForm = ({ initialData }: InterviewFormProps) => {
-
+const InterviewForm = ({ initialData }: FormMockInterviewProps) => {
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
-  defaultValues: {
-    position: "",
-    description: "",
-    experience: 0,
-    techStack: "",
-  },
+    mode: "onChange",
+    defaultValues: {
+      position: initialData?.position || "",
+      description: initialData?.description || "",
+      experience: initialData?.experience || 0,
+      techStack: initialData?.techStack || "",
+    },
   });
 
-
-  const { isValid, isSubmitting } = form.formState;
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { userId } = useAuth();
@@ -53,31 +56,23 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
     ? initialData.position
     : "Create a new mock interview";
 
-  const breadCrumpPage = initialData ? initialData?.position : "Create";
-
+  const breadCrumpPage = initialData ? initialData.position : "Create";
   const actions = initialData ? "Save Changes" : "Create";
-
   const toastMessage = initialData
-    ? { title: "Updated..!", description: "Changes saved successfully..." }
-    : { title: "Created..!", description: "New Mock Interview created..." };
+    ? { title: "Updated!", description: "Changes saved successfully" }
+    : { title: "Created!", description: "New Mock Interview created" };
 
   const cleanJsonResponse = (responseText: string) => {
-    // Step 1: Trim any surrounding whitespace
     let cleanText = responseText.trim();
-
-    // Step 2: Remove any occurrences of "json" or code block symbols (``` or `)
     cleanText = cleanText.replace(/(json|```|`)/g, "");
-
-    // Step 3: Extract a JSON array by capturing text between square brackets
+    
     const jsonArrayMatch = cleanText.match(/\[.*\]/s);
-
     if (jsonArrayMatch) {
       cleanText = jsonArrayMatch[0];
     } else {
       throw new Error("No JSON array found in response");
     }
 
-    // Step 4: Parse the clean JSON text into an array of objects
     try {
       return JSON.parse(cleanText);
     } catch (error) {
@@ -86,86 +81,81 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
   };
 
   const generateAiResult = async (data: FormData) => {
-
     const prompt = `
-            As an experienced prompt engineer, generate a JSON array containing 5 technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
+As an experienced prompt engineer, generate a JSON array containing 5 technical interview questions along with detailed answers based on the following job information. Each object in the array should have the fields "question" and "answer", formatted as follows:
 
-            [
-              { "question": "<Question text>", "answer": "<Answer text>" },
-              ...
-            ]
+[
+  { "question": "<Question text>", "answer": "<Answer text>" },
+  ...
+]
 
-            Job Information:
-            - Job Position: ${data?.position}
-            - Job Description: ${data?.description}
-            - Years of Experience Required: ${data?.experience}
-            - Tech Stacks: ${data?.techStack}
+Job Information:
+- Job Position: ${data.position}
+- Job Description: ${data.description}
+- Years of Experience Required: ${data.experience}
+- Tech Stacks: ${data.techStack}
 
-            The questions should assess skills in ${data?.techStack} development and best practices, problem-solving, and experience handling complex requirements. Please format the output strictly as an array of JSON objects without any additional labels, code blocks, or explanations. Return only the JSON array with questions and answers.
-            `;
+The questions should assess skills in ${data.techStack} development and best practices, problem-solving, and experience handling complex requirements. Please format the output strictly as an array of JSON objects without any additional labels, code blocks, or explanations. Return only the JSON array with questions and answers.
+`;
 
     const aiResult = await chatSession.sendMessage(prompt);
-
-    // console.log(aiResult.response.text().trim());
-
     const cleanedResponse = cleanJsonResponse(aiResult.response.text());
-
     return cleanedResponse;
-  }
+  };
 
   const onSubmit = async (data: FormData) => {
     try {
       setIsLoading(true);
 
+      // Generate AI questions
+      const aiResult = await generateAiResult(data);
+
       if (initialData) {
-        // update api
-        if (isValid) {
-          // create a new mock interview
-          const aiResult = await generateAiResult(data);
-
-          await updateDoc(doc(db, "interviews", initialData?.id), {
-            questions: aiResult,
-            ...data,
-            updatedAt: serverTimestamp(),
-          });
-
-          toast(toastMessage.title, { description: toastMessage.description });
-        }
+        // Update existing interview
+        await updateDoc(doc(db, "interviews", initialData.id), {
+          ...data,
+          questions: aiResult,
+          updatedAt: serverTimestamp(),
+        });
       } else {
-        // create api
+        // Create new interview
+        const interviewRef = await addDoc(collection(db, "interviews"), {
+          ...data,
+          userId,
+          questions: aiResult,
+          createdAt: serverTimestamp(),
+        });
 
-        if (isValid) {
-          // create a new mock interview
-          const aiResult = await generateAiResult(data);
-
-          const interviewRef = await addDoc(collection(db, "interviews"), {
-            ...data,
-            userId,
-            questions: aiResult,
-            createdAt: serverTimestamp(),
-          });
-
-          const id = interviewRef.id;
-
-          await updateDoc(doc(db, "interviews", id), {
-            id,
-            updatedAt: serverTimestamp(),
-          });
-
-          toast(toastMessage.title, { description: toastMessage.description });
-        }
+        await updateDoc(doc(db, "interviews", interviewRef.id), {
+          id: interviewRef.id,
+          updatedAt: serverTimestamp(),
+        });
       }
 
+      toast(toastMessage.title, { description: toastMessage.description });
       navigate("/generate", { replace: true });
+
     } catch (error) {
-      console.log(error);
-      toast.error("Error..", {
-        description: `Something went wrong. Please try again later`,
-      });
+      console.error("Form submission error:", error);
+      
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : "Something went wrong. Please try again later";
+      
+      toast.error("Error", { description: errorMessage });
     } finally {
       setIsLoading(false);
     }
-  }
+  };
+
+  const handleReset = () => {
+    form.reset({
+      position: "",
+      description: "",
+      experience: 0,
+      techStack: "",
+    });
+  };
 
   useEffect(() => {
     if (initialData) {
@@ -174,9 +164,9 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
         description: initialData.description,
         experience: initialData.experience,
         techStack: initialData.techStack,
-      })
+      });
     }
-  }, [initialData, form])
+  }, [initialData, form]);
 
   return (
     <div className="w-full flex-col space-y-4">
@@ -189,7 +179,7 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
         <Headings title={title} isSubHeading />
 
         {initialData && (
-          <Button size={"icon"} variant={"ghost"}>
+          <Button size="icon" variant="ghost">
             <Trash2 className="text-red-500 min-w-4 min-h-4" />
           </Button>
         )}
@@ -200,8 +190,11 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
       <div className="my-6"></div>
 
       <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-full p-8 rounded-lg flex-col flex items-start justify-start gap-6 shadow-md ">
-
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="w-full p-8 rounded-lg flex-col flex items-start justify-start gap-6 shadow-md"
+        >
+          {/* Position Field */}
           <FormField
             control={form.control}
             name="position"
@@ -215,15 +208,15 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
                   <Input
                     className="h-12"
                     disabled={isLoading}
-                    placeholder="eg:- Full Stack Developer"
+                    placeholder="e.g., Full Stack Developer"
                     {...field}
-                    value={field.value || ""}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
+          {/* Description Field */}
           <FormField
             control={form.control}
             name="description"
@@ -235,17 +228,17 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
                 </div>
                 <FormControl>
                   <Textarea
-                    className="h-12"
+                    className="min-h-24"
                     disabled={isLoading}
-                    placeholder="eg:- describle your job role"
+                    placeholder="e.g., Describe your job role and responsibilities"
                     {...field}
-                    value={field.value || ""}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
+          {/* Experience Field */}
           <FormField
             control={form.control}
             name="experience"
@@ -260,15 +253,20 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
                     type="number"
                     className="h-12"
                     disabled={isLoading}
-                    placeholder="eg:- 5 Years"
+                    placeholder="e.g., 5"
+                    min="0"
                     {...field}
-                    value={field.value || ""}
+                    onChange={(e) => {
+                      const value = e.target.valueAsNumber;
+                      field.onChange(isNaN(value) ? 0 : value);
+                    }}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
+          {/* Tech Stack Field */}
           <FormField
             control={form.control}
             name="techStack"
@@ -280,33 +278,34 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
                 </div>
                 <FormControl>
                   <Textarea
-                    className="h-12"
+                    className="min-h-24"
                     disabled={isLoading}
-                    placeholder="eg:- React, Typescript..."
+                    placeholder="e.g., React, TypeScript, Node.js, PostgreSQL"
                     {...field}
-                    value={field.value || ""}
                   />
                 </FormControl>
               </FormItem>
             )}
           />
 
+          {/* Action Buttons */}
           <div className="w-full flex items-center justify-end gap-6">
             <Button
-              type="reset"
-              size={"sm"}
-              variant={"outline"}
-              disabled={isSubmitting || isLoading}
+              type="button"
+              size="sm"
+              variant="outline"
+              disabled={isLoading}
+              onClick={handleReset}
             >
               Reset
             </Button>
             <Button
               type="submit"
-              size={"sm"}
-              disabled={isSubmitting || !isValid || isLoading}
+              size="sm"
+              disabled={isLoading || !form.formState.isValid}
             >
               {isLoading ? (
-                <Loader className="text-gray-50 animate-spin" />
+                <Loader className="text-gray-50 animate-spin h-4 w-4" />
               ) : (
                 actions
               )}
@@ -315,7 +314,7 @@ const InterviewForm = ({ initialData }: InterviewFormProps) => {
         </form>
       </FormProvider>
     </div>
-  )
-}
+  );
+};
 
 export default InterviewForm;

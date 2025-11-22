@@ -9,15 +9,12 @@ import {
   VideoOff,
   WebcamIcon,
 } from "lucide-react";
-
 import useSpeechToText from "react-hook-speech-to-text";
 import type { ResultType } from "react-hook-speech-to-text";
-
 import { TooltipButton } from "@/components/ToolTipButton";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { SaveModal } from "./SaveModel";
-
 import {
   addDoc,
   collection,
